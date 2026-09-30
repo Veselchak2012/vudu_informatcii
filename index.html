@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#eef6ff">
+<title>Види інформації — вправи для 2 класу</title>
+<style>
+  :root{
+    --text:#3b82f6; --graph:#f59e0b; --sound:#ec4899; --combo:#10b981;
+    --bg:#eef6ff; --ink:#1f2a44; --main:#6366f1; --mainD:#4338ca;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;
+    background:var(--bg); color:var(--ink); min-height:100vh; min-height:100dvh;
+    display:flex; justify-content:center;
+    padding:0 max(10px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+    touch-action:manipulation;
+  }
+  button{font-family:inherit; touch-action:manipulation}
+  .app{width:100%; max-width:960px}
+
+  /* шапка */
+  .top{position:sticky; top:0; z-index:5; background:var(--bg); padding:max(8px,env(safe-area-inset-top)) 0 6px}
+  header{display:flex; align-items:center; gap:8px}
+  .home{
+    width:48px; height:48px; flex:none; border:none; border-radius:14px; background:#fff;
+    font-size:24px; box-shadow:0 3px 0 #cfe0f5; cursor:pointer; display:none;
+  }
+  .mascot{font-size:clamp(36px,9vw,56px); line-height:1; flex:none}
+  .bubble{
+    background:#fff; border-radius:18px; padding:8px 14px; font-size:clamp(14px,4vw,21px);
+    box-shadow:0 3px 0 #cfe0f5; flex:1; min-height:52px; display:flex; align-items:center; line-height:1.25;
+  }
+  .bubble.ok{background:#dcfce7; box-shadow:0 3px 0 #a7e3bb}
+  .bubble.bad{background:#fee2e2; box-shadow:0 3px 0 #f5b5b5}
+  .bar{height:12px; background:#fff; border-radius:8px; overflow:hidden; margin-top:8px; box-shadow:inset 0 1px 3px #0002; display:none}
+  .bar div{height:100%; width:0; background:linear-gradient(90deg,#34d399,#3b82f6); transition:width .4s}
+
+  h1{font-size:clamp(20px,5vw,32px); text-align:center; margin:8px 0 12px}
+
+  /* меню */
+  .menu{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+  .tile{
+    border:none; border-radius:22px; background:#fff; padding:14px 10px; cursor:pointer;
+    box-shadow:0 5px 0 #cfe0f5; text-align:center; color:var(--ink); min-height:140px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    transition:transform .12s;
+  }
+  .tile:active{transform:translateY(3px); box-shadow:0 2px 0 #cfe0f5}
+  .tile .ti{font-size:clamp(38px,10vw,56px); line-height:1}
+  .tile b{font-size:clamp(16px,4.3vw,22px)}
+  .tile small{font-size:clamp(12px,3.3vw,15px); opacity:.75}
+  .tile .st{font-size:18px; min-height:22px}
+
+  /* кошики */
+  .baskets{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:12px}
+  .basket{
+    border:4px dashed; border-radius:20px; background:#fff; padding:8px 6px 10px;
+    text-align:center; cursor:pointer; min-height:170px; transition:transform .15s, background .15s;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .basket.over{transform:scale(1.03); background:#fffbe6}
+  .basket h3{margin:2px 0 0; font-size:clamp(14px,2.4vw,21px)}
+  .basket .ico{font-size:clamp(26px,5vw,44px)}
+  .basket small{font-size:clamp(11px,1.8vw,14px); opacity:.75}
+  .basket .placed{display:flex; flex-wrap:wrap; justify-content:center; gap:4px; margin-top:6px}
+  .basket .placed span{font-size:clamp(22px,4vw,34px); animation:pop .4s}
+  .b-text{border-color:var(--text)} .b-text h3{color:var(--text)}
+  .b-graph{border-color:var(--graph)} .b-graph h3{color:#c77c00}
+  .b-sound{border-color:var(--sound)} .b-sound h3{color:var(--sound)}
+  .b-combo{border-color:var(--combo)} .b-combo h3{color:#0b8a63}
+
+  .tray{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
+    background:#fff; border-radius:22px; padding:14px 10px; min-height:140px;
+    box-shadow:0 3px 0 #cfe0f5;
+  }
+  .card{
+    width:clamp(92px,21vw,140px); background:#fff7d6; border:3px solid #f5d76e; border-radius:18px;
+    padding:8px 4px; text-align:center; cursor:pointer; user-select:none; -webkit-user-select:none; position:relative;
+    box-shadow:0 4px 0 #e6c24d; transition:transform .15s;
+  }
+  .card.sel{outline:5px solid var(--main); transform:translateY(-4px) scale(1.05)}
+  .card .em{font-size:clamp(34px,7vw,52px); line-height:1.1}
+  .card .lb{font-size:clamp(12px,2.2vw,17px); font-weight:bold; margin-top:2px; line-height:1.15}
+  .card .say{
+    position:absolute; top:-10px; right:-8px; width:38px; height:38px; border-radius:50%;
+    border:none; background:var(--main); color:#fff; font-size:17px; cursor:pointer;
+  }
+
+  /* вікторини */
+  .qbox{background:#fff; border-radius:22px; padding:16px 12px; box-shadow:0 3px 0 #cfe0f5; text-align:center}
+  .qprompt{font-size:clamp(20px,5.5vw,30px); font-weight:bold; margin-bottom:14px; line-height:1.25}
+  .qprompt .big{display:block; font-size:clamp(52px,16vw,88px); line-height:1.1; margin-bottom:6px}
+  .opts{display:grid; gap:10px}
+  .opts.two{grid-template-columns:1fr 1fr}
+  .opts.four{grid-template-columns:1fr 1fr}
+  .opts.cards{grid-template-columns:1fr 1fr}
+  .opt{
+    border:3px solid #cbd5e1; background:#f8fafc; border-radius:18px; min-height:64px; padding:10px 8px;
+    font-size:clamp(17px,4.6vw,24px); font-weight:bold; color:var(--ink); cursor:pointer;
+    box-shadow:0 4px 0 #cbd5e1; line-height:1.2;
+  }
+  .opt:active:not(:disabled){transform:translateY(3px); box-shadow:0 1px 0 #cbd5e1}
+  .opt .em{display:block; font-size:clamp(36px,10vw,56px); line-height:1.1}
+  .opt .lb{display:block; font-size:clamp(13px,3.6vw,18px)}
+  .opt.right{background:#dcfce7; border-color:#22c55e; box-shadow:0 4px 0 #22c55e}
+  .opt.wrong{background:#fee2e2; border-color:#ef4444; box-shadow:0 4px 0 #ef4444; opacity:.8}
+  .opts.two .opt{min-height:84px; font-size:clamp(20px,6vw,30px)}
+  .fb{min-height:64px; margin-top:12px}
+
+  /* пам'ять */
+  .mem{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+  .mcard{
+    aspect-ratio:1/1.05; border:3px solid var(--mainD); border-radius:16px; background:var(--main); color:#fff;
+    font-size:clamp(30px,9vw,52px); cursor:pointer; padding:4px; box-shadow:0 4px 0 var(--mainD);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.1;
+  }
+  .mcard .face{display:none; flex-direction:column; align-items:center; color:var(--ink)}
+  .mcard .back{font-weight:bold}
+  .mcard.open,.mcard.done{background:#fff7d6; border-color:#f5d76e; box-shadow:0 4px 0 #e6c24d}
+  .mcard.done{background:#dcfce7; border-color:#22c55e; box-shadow:0 4px 0 #22c55e}
+  .mcard.open .face,.mcard.done .face{display:flex}
+  .mcard.open .back,.mcard.done .back{display:none}
+  .mcard .em{font-size:clamp(30px,9vw,50px)}
+  .mcard .lb{font-size:clamp(10px,2.6vw,15px); font-weight:bold; margin-top:2px; text-align:center; word-break:break-word}
+
+  /* кінець */
+  .end{text-align:center; background:#fff; border-radius:24px; padding:22px 14px; box-shadow:0 4px 0 #cfe0f5}
+  .end h2{font-size:clamp(22px,6vw,36px); margin:6px 0}
+  .end .big{font-size:clamp(44px,14vw,64px)}
+  .end p{font-size:clamp(16px,4.5vw,20px); margin:6px 0}
+  .btn{
+    border:none; background:var(--main); color:#fff; font-size:clamp(18px,5vw,22px); font-weight:bold;
+    padding:14px 24px; min-height:52px; border-radius:16px; cursor:pointer; box-shadow:0 4px 0 var(--mainD); margin:8px 4px 0;
+  }
+  .btn.alt{background:#64748b; box-shadow:0 4px 0 #475569}
+  .btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--mainD)}
+  .btn.wide{width:100%; margin:0}
+
+  .shake{animation:shake .45s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}}
+  @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+  .confetti{position:fixed; top:-40px; font-size:26px; pointer-events:none; animation:fall linear forwards; z-index:20}
+  @keyframes fall{to{transform:translateY(112vh) rotate(360deg)}}
+
+  /* телефони */
+  @media (max-width:640px){
+    .baskets{grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:10px}
+    .basket{min-height:96px; padding:6px 4px 8px; border-width:3px}
+    .basket small{display:none}
+    .basket .ico{font-size:28px}
+    .tray{gap:12px 8px; padding:16px 6px 12px}
+    .card{width:calc(33.33% - 8px); min-width:0}
+    .mem{gap:8px}
+  }
+  @media (max-width:400px){
+    .menu{gap:8px}
+    .tile{min-height:124px; padding:10px 6px}
+    .opts.four .opt{font-size:16px}
+  }
+  @media (max-height:480px) and (orientation:landscape){
+    .top{position:static}
+    .menu{grid-template-columns:repeat(3,1fr)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important; transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <header>
+      <button class="home" id="home" aria-label="До меню" onclick="showMenu()">🏠</button>
+      <div class="mascot">🤖</div>
+      <div class="bubble" id="msg"></div>
+    </header>
+    <div class="bar" id="bar"><div id="prog"></div></div>
+  </div>
+  <main id="stage"></main>
+</div>
+
+<script>
+/* ---------- дані ---------- */
+const CATS = {
+  text:  {name:"Текстова",    ico:"🔤", hint:"літери, цифри, позначки", cls:"b-text",  tip:"Це записано літерами або цифрами — інформація текстова.", check:"чи є тут літери або цифри?"},
+  graph: {name:"Графічна",    ico:"🖼️", hint:"малюнки, фото, ноти",     cls:"b-graph", tip:"Це можна побачити на малюнку, фото чи нотах — інформація графічна.", check:"чи це можна побачити на малюнку, фото або в нотах?"},
+  sound: {name:"Звукова",     ico:"🔊", hint:"те, що чуємо",            cls:"b-sound", tip:"Це ми сприймаємо на слух — інформація звукова.", check:"чи це ми чуємо вухами?"},
+  combo: {name:"Комбінована", ico:"🎬", hint:"кілька способів разом",   cls:"b-combo", tip:"Тут разом і відео, і звук, і текст — це комбінований спосіб.", check:"чи тут є і картинка, і звук разом?"}
+};
+
+const POOL = [
+  {e:"📖", l:"Книжка з літерами", c:"text"},
+  {e:"🔠", l:"Літери А Б В", c:"text"},
+  {e:"🔢", l:"Цифри 1 2 3", c:"text"},
+  {e:"✉️", l:"Записка", c:"text"},
+  {e:"📰", l:"Текст у газеті", c:"text"},
+
+  {e:"🎨", l:"Малюнок", c:"graph"},
+  {e:"📷", l:"Фотографія", c:"graph"},
+  {e:"🎼", l:"Ноти", c:"graph"},
+  {e:"🚸", l:"Дорожній знак", c:"graph"},
+  {e:"🗺️", l:"Карта", c:"graph"},
+
+  {e:"🔔", l:"Шкільний дзвінок", c:"sound"},
+  {e:"🐶", l:"Гавкіт собаки", c:"sound"},
+  {e:"🎧", l:"Пісня на слух", c:"sound"},
+  {e:"📢", l:"Оголошення по радіо", c:"sound"},
+  {e:"🚨", l:"Сирена", c:"sound"},
+
+  {e:"🎬", l:"Мультфільм", c:"combo"},
+  {e:"📺", l:"Відео зі звуком", c:"combo"},
+  {e:"🎤", l:"Караоке", c:"combo"},
+  {e:"🎮", l:"Відеогра", c:"combo"},
+  {e:"🧑‍🏫", l:"Презентація з озвучкою", c:"combo"}
+];
+
+const SCENES = [
+  {e:"🐦", t:"Ти чуєш, як співає пташка", c:"sound"},
+  {e:"📻", t:"Тато слухає радіо", c:"sound"},
+  {e:"🔔", t:"Лунає дзвінок на урок", c:"sound"},
+  {e:"🖼️", t:"Ти розглядаєш малюнок у книжці", c:"graph"},
+  {e:"🚦", t:"Ти бачиш дорожній знак", c:"graph"},
+  {e:"🎹", t:"Піаністка дивиться на ноти", c:"graph"},
+  {e:"📝", t:"Ти читаєш слова в підручнику", c:"text"},
+  {e:"🔢", t:"Ти рахуєш цифри на картці", c:"text"},
+  {e:"💌", t:"Ти читаєш лист від друга", c:"text"},
+  {e:"🍿", t:"Ти дивишся мультфільм", c:"combo"},
+  {e:"📱", t:"Ти дивишся відео зі звуком і підписами", c:"combo"},
+  {e:"🎮", t:"Ти граєш у гру з музикою і картинками", c:"combo"}
+];
+
+const STATEMENTS = [
+  {t:"Ноти — це графічна інформація.", a:true,  x:"Так, ноти — це графічна інформація."},
+  {t:"Дзвінок на урок — це текстова інформація.", a:false, x:"Ні, дзвінок ми чуємо — це звукова інформація."},
+  {t:"Мультфільм подає інформацію кількома способами.", a:true, x:"Так, у мультфільмі є і відео, і звук, і текст. Це комбінований спосіб."},
+  {t:"Цифри — це графічна інформація.", a:false, x:"Ні, цифри — це текстова інформація, як і літери."},
+  {t:"Фотографія — це графічна інформація.", a:true, x:"Так, фото — графічна інформація."},
+  {t:"Гавкіт собаки ми сприймаємо на слух.", a:true, x:"Так, це звукова інформація."},
+  {t:"Дорожній знак — це звукова інформація.", a:false, x:"Ні, знак ми бачимо — це графічна інформація."},
+  {t:"У книжці з літерами є текстова інформація.", a:true, x:"Так, літери утворюють текст."},
+  {t:"Повідомлення стає інформацією, коли ти його зрозумієш.", a:true, x:"Так! Якщо не розумієш повідомлення, то інформації не отримуєш."},
+  {t:"Одну й ту саму інформацію можна подати різними способами.", a:true, x:"Так, наприклад, перехід через дорогу показують і знаком, і написом, і смугами."},
+  {t:"Комбінований спосіб — це коли інформацію подають лише текстом.", a:false, x:"Ні, комбінований — це коли способів кілька: відео, звук, текст, малюнок."},
+  {t:"Малюнок — це звукова інформація.", a:false, x:"Ні, малюнок ми бачимо — це графічна інформація."}
+];
+
+const EXERCISES = [
+  {id:"sort",  ico:"🧺", title:"Розклади по кошиках", desc:"Знайди місце кожній картці", run:runSort},
+  {id:"odd",   ico:"🔍", title:"Що зайве?",           desc:"Знайди картку, що не пасує", run:runOdd},
+  {id:"scene", ico:"👂", title:"Який це вид?",        desc:"Що ти бачиш, чуєш, читаєш", run:runScene},
+  {id:"tf",    ico:"✅", title:"Так чи ні?",          desc:"Правда це чи ні",            run:runTF},
+  {id:"mem",   ico:"🃏", title:"Пам'ять",             desc:"Знайди пари: картка і вид",  run:runMemory}
+];
+
+/* ---------- утиліти ---------- */
+const $ = id => document.getElementById(id);
+const stage = $('stage');
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+function itemsOf(cat){ return POOL.filter(p=>p.c===cat); }
+function pickN(arr,n){ return shuffle(arr).slice(0,n); }
+function low(s){ return s.toLowerCase(); }
+
+function say(text){
+  try{
+    if(!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang='uk-UA'; u.rate=0.9;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function stopSay(){ try{ window.speechSynthesis && speechSynthesis.cancel(); }catch(e){} }
+
+let actx;
+function beep(ok){
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended') actx.resume();
+    const notes = ok ? [523,659,784] : [220,180];
+    notes.forEach((f,i)=>{
+      const o=actx.createOscillator(), g=actx.createGain(), t=actx.currentTime+i*0.12;
+      o.type = ok?'sine':'triangle'; o.frequency.value=f;
+      g.gain.setValueAtTime(0.15,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+      o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t+0.22);
+    });
+  }catch(e){}
+}
+
+function setMsg(t, kind){ const m=$('msg'); m.textContent=t; m.className='bubble'+(kind?' '+kind:''); }
+function setProgress(f){ $('prog').style.width=(Math.max(0,Math.min(1,f))*100)+'%'; }
+function showBar(v){ $('bar').style.display = v?'block':'none'; if(v) setProgress(0); }
+
+/* найкращі результати */
+let best = {};
+try{ best = JSON.parse(localStorage.getItem('vydy-best')||'{}') || {}; }catch(e){ best = {}; }
+function saveBest(id,n){
+  if(!best[id] || n>best[id]){
+    best[id]=n;
+    try{ localStorage.setItem('vydy-best', JSON.stringify(best)); }catch(e){}
+  }
+}
+
+/* ---------- меню ---------- */
+function showMenu(){
+  stopSay();
+  $('home').style.display='none'; showBar(false);
+  stage.innerHTML = '<h1>Оберіть вправу</h1><div class="menu" id="menu"></div>';
+  const menu=$('menu');
+  EXERCISES.forEach(ex=>{
+    const b=document.createElement('button'); b.className='tile';
+    const n=best[ex.id]||0;
+    b.innerHTML=`<span class="ti">${ex.ico}</span><b>${ex.title}</b><small>${ex.desc}</small><span class="st">${n?('⭐'.repeat(n)+'☆'.repeat(3-n)):''}</span>`;
+    b.onclick=()=>startEx(ex);
+    menu.appendChild(b);
+  });
+  setMsg('Привіт! Я Інформаша. Обери вправу!');
+}
+function startEx(ex){
+  stopSay();
+  $('home').style.display='block'; showBar(true);
+  window.scrollTo(0,0);
+  ex.run();
+  currentEx = ex;
+}
+let currentEx = null;
+
+/* ---------- фініш ---------- */
+function finish(id, stars, text){
+  showBar(true); setProgress(1);
+  saveBest(id, stars);
+  stage.innerHTML = `<div class="end">
+    <div class="big">${'⭐'.repeat(stars)+'☆'.repeat(3-stars)}</div>
+    <h2>${stars===3?'Чудово! Ти знавець інформації!':stars===2?'Дуже добре!':'Гарна робота!'}</h2>
+    <p>${text}</p>
+    <button class="btn" id="again">🔄 Ще раз</button>
+    <button class="btn alt" id="tomenu">🏠 До меню</button>
+  </div>`;
+  $('again').onclick=()=>startEx(currentEx);
+  $('tomenu').onclick=showMenu;
+  setMsg('Ти впорався! Вітаю! 🎉','ok');
+  say('Молодець!');
+  window.scrollTo(0,0);
+  for(let i=0;i<26;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.textContent=['🎉','⭐','✨','🎈','💫'][i%5];
+    c.style.left=Math.random()*100+'vw';
+    c.style.animationDuration=(2+Math.random()*2.5)+'s';
+    c.style.animationDelay=Math.random()*0.8+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5600);
+  }
+}
+function starsByMistakes(m){ return m<=1?3:m<=3?2:1; }
+
+/* ---------- Вправа 1: кошики ---------- */
+function runSort(){
+  const S = {items:[], sel:null, done:0, mistakes:0};
+  const pick=[]; Object.keys(CATS).forEach(k=>pick.push(...pickN(itemsOf(k),2)));
+  S.items = shuffle(pick);
+  const total = S.items.length;
+  const canDrag = window.matchMedia && matchMedia('(pointer:fine)').matches;
+
+  stage.innerHTML = '<div class="baskets" id="baskets"></div><div class="tray" id="tray"></div>';
+  const box=$('baskets');
+  Object.entries(CATS).forEach(([k,c])=>{
+    const d=document.createElement('div'); d.className='basket '+c.cls; d.dataset.cat=k;
+    d.innerHTML=`<div class="ico">${c.ico}</div><h3>${c.name}</h3><small>${c.hint}</small><div class="placed"></div>`;
+    d.addEventListener('click',()=>place(k));
+    d.addEventListener('dragover',e=>{e.preventDefault(); d.classList.add('over');});
+    d.addEventListener('dragleave',()=>d.classList.remove('over'));
+    d.addEventListener('drop',e=>{
+      e.preventDefault(); d.classList.remove('over');
+      const id=e.dataTransfer.getData('text/plain');
+      if(id!==''){ S.sel=+id; place(k); }
+    });
+    box.appendChild(d);
+  });
+
+  function tray(){
+    const t=$('tray'); t.innerHTML='';
+    S.items.forEach((it,i)=>{
+      if(it.done) return;
+      const d=document.createElement('div'); d.className='card'; d.dataset.i=i;
+      if(canDrag) d.draggable=true;
+      d.innerHTML=`<button class="say" aria-label="Прочитати">🔊</button><div class="em">${it.e}</div><div class="lb">${it.l}</div>`;
+      d.addEventListener('click',()=>{ S.sel=i; refresh(); setMsg('Обрано: '+it.l+'. Тепер торкнись кошика!'); });
+      d.addEventListener('dragstart',e=>{ e.dataTransfer.setData('text/plain',String(i)); S.sel=i; refresh(); });
+      d.querySelector('.say').addEventListener('click',e=>{ e.stopPropagation(); say(it.l); });
+      t.appendChild(d);
+    });
+    refresh();
+  }
+  function refresh(){ document.querySelectorAll('#tray .card').forEach(c=>c.classList.toggle('sel',+c.dataset.i===S.sel)); }
+
+  function place(cat){
+    if(S.sel===null){ setMsg('Спершу торкнись якоїсь картки 👆'); return; }
+    const it=S.items[S.sel]; if(!it||it.done) return;
+    if(it.c===cat){
+      it.done=true; S.done++; beep(true);
+      const sp=document.createElement('span'); sp.textContent=it.e;
+      document.querySelector(`.basket[data-cat="${cat}"] .placed`).appendChild(sp);
+      setMsg('Молодець! '+CATS[cat].tip,'ok');
+      S.sel=null; tray(); setProgress(S.done/total);
+      if(S.done===total) setTimeout(()=>finish('sort',starsByMistakes(S.mistakes),
+        S.mistakes===0?'Жодної помилки!':'Помилок: '+S.mistakes+'. Спробуй ще раз — вийде ще краще!'),900);
+    }else{
+      S.mistakes++; beep(false);
+      const card=document.querySelector(`#tray .card[data-i="${S.sel}"]`);
+      if(card){ card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake'); }
+      setMsg('Ой, спробуй ще! Подумай: '+CATS[it.c].check,'bad');
+    }
+  }
+  tray();
+  setMsg('Торкнись картки, а потім потрібного кошика! Кнопка 🔊 прочитає підпис.');
+}
+
+/* ---------- загальний рушій вікторини ---------- */
+function runQuiz(id, qs, layout){
+  let i=0, mistakes=0, locked=false;
+  function show(){
+    const q=qs[i]; locked=false;
+    setProgress(i/qs.length);
+    stage.innerHTML=`<div class="qbox"><div class="qprompt">${q.prompt}</div><div class="opts ${layout}" id="opts"></div><div class="fb" id="fb"></div></div>`;
+    const opts=$('opts');
+    q.options.forEach(o=>{
+      const b=document.createElement('button'); b.className='opt'; b.innerHTML=o.html;
+      b.addEventListener('click',()=>choose(b,o));
+      opts.appendChild(b);
+    });
+    setMsg(q.ask);
+  }
+  function choose(b,o){
+    if(locked) return;
+    const q=qs[i];
+    if(o.key===q.correct){
+      locked=true; b.classList.add('right'); beep(true);
+      document.querySelectorAll('#opts .opt').forEach(x=>x.disabled=true);
+      setMsg('Молодець! '+q.explain,'ok');
+      const nb=document.createElement('button'); nb.className='btn wide';
+      nb.textContent = (i===qs.length-1)?'Готово! 🎉':'Далі ➡️';
+      nb.onclick=()=>{ i++; if(i>=qs.length){
+          finish(id,starsByMistakes(mistakes),mistakes===0?'Жодної помилки!':'Помилок: '+mistakes+'. Спробуй ще раз — вийде ще краще!');
+        } else show(); };
+      $('fb').appendChild(nb);
+    }else{
+      mistakes++; beep(false);
+      b.classList.add('wrong'); b.disabled=true;
+      b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+      setMsg('Спробуй ще! '+q.hint,'bad');
+    }
+  }
+  show();
+}
+
+/* ---------- Вправа 2: що зайве ---------- */
+function runOdd(){
+  const cats=Object.keys(CATS);
+  const qs=[];
+  const order=shuffle(cats.concat(cats)).slice(0,6);
+  order.forEach(x=>{
+    const y=shuffle(cats.filter(c=>c!==x))[0];
+    const three=pickN(itemsOf(x),3), odd=pickN(itemsOf(y),1)[0];
+    const opts=shuffle(three.map((it,n)=>({key:'x'+n,it})).concat([{key:'odd',it:odd}]))
+      .map(o=>({key:o.key, html:`<span class="em">${o.it.e}</span><span class="lb">${o.it.l}</span>`}));
+    qs.push({
+      prompt:'Що тут зайве?',
+      ask:'Три картки одного виду, а одна — іншого. Знайди її!',
+      options:opts, correct:'odd',
+      explain:`${odd.l} — ${low(CATS[y].name)} інформація, а решта — ${low(CATS[x].name)}.`,
+      hint:'Подумай, як подано інформацію на кожній картці: текстом, малюнком, звуком чи разом?'
+    });
+  });
+  runQuiz('odd',qs,'cards');
+}
+
+/* ---------- Вправа 3: який це вид ---------- */
+function runScene(){
+  const qs=pickN(SCENES,7).map(s=>({
+    prompt:`<span class="big">${s.e}</span>${s.t}`,
+    ask:'Яку інформацію ти отримуєш? Обери вид.',
+    options:Object.entries(CATS).map(([k,c])=>({key:k, html:`${c.ico} ${c.name}`})),
+    correct:s.c,
+    explain:CATS[s.c].tip,
+    hint:'Подумай: '+CATS[s.c].check
+  }));
+  runQuiz('scene',qs,'four');
+}
+
+/* ---------- Вправа 4: так чи ні ---------- */
+function runTF(){
+  const qs=pickN(STATEMENTS,8).map(s=>({
+    prompt:s.t,
+    ask:'Це правда? Обери «Так» або «Ні».',
+    options:[{key:'yes',html:'✅ Так'},{key:'no',html:'❌ Ні'}],
+    correct:s.a?'yes':'no',
+    explain:s.x,
+    hint:'Подумай ще раз і перечитай речення.'
+  }));
+  runQuiz('tf',qs,'two');
+}
+
+/* ---------- Вправа 5: пам'ять ---------- */
+function runMemory(){
+  const cards=[];
+  Object.keys(CATS).forEach(k=>{
+    const it=pickN(itemsOf(k),1)[0];
+    cards.push({k,kind:'item',e:it.e,l:it.l});
+    cards.push({k,kind:'type',e:CATS[k].ico,l:CATS[k].name});
+  });
+  const deck=shuffle(cards);
+  stage.innerHTML='<div class="mem" id="mem"></div>';
+  const grid=$('mem');
+  let first=null, lock=false, matched=0, moves=0;
+  deck.forEach((c,idx)=>{
+    const b=document.createElement('button'); b.className='mcard'; b.dataset.i=idx;
+    b.setAttribute('aria-label','Картка '+(idx+1));
+    b.innerHTML=`<span class="back">❓</span><span class="face"><span class="em">${c.e}</span><span class="lb">${c.l}</span></span>`;
+    b.addEventListener('click',()=>flip(idx,b));
+    grid.appendChild(b);
+  });
+  setMsg('Відкривай по дві картки. Шукай пару: предмет і його вид інформації!');
+  function flip(idx,b){
+    if(lock||b.classList.contains('open')||b.classList.contains('done')) return;
+    b.classList.add('open');
+    if(first===null){ first=idx; return; }
+    const a=deck[first], c=deck[idx], ba=grid.children[first];
+    moves++;
+    if(a.k===c.k && a.kind!==c.kind){
+      ba.classList.remove('open'); ba.classList.add('done');
+      b.classList.remove('open'); b.classList.add('done');
+      matched++; first=null; beep(true);
+      setMsg('Пара! '+CATS[a.k].tip,'ok'); setProgress(matched/4);
+      if(matched===4) setTimeout(()=>finish('mem', moves<=6?3:moves<=9?2:1, 'Ходів: '+moves+'. '+(moves<=6?'Дуже уважно!':'Спробуй ще раз — вийде за менше ходів!')),900);
+    }else{
+      lock=true; beep(false); setMsg('Не пара. Запам\u2019ятай, де що лежить!','bad');
+      setTimeout(()=>{ ba.classList.remove('open'); b.classList.remove('open'); first=null; lock=false; },1000);
+    }
+  }
+}
+
+showMenu();
+</script>
+</body>
+</html>
