@@ -86,6 +86,7 @@
   .card.sel{outline:5px solid var(--main); transform:translateY(-4px) scale(1.05)}
   .card .em{font-size:clamp(34px,7vw,52px); line-height:1.1}
   .card .lb{font-size:clamp(12px,2.2vw,17px); font-weight:bold; margin-top:2px; line-height:1.15}
+  .novoice .say{display:none}
   .card .say{
     position:absolute; top:-10px; right:-8px; width:38px; height:38px; border-radius:50%;
     border:none; background:var(--main); color:#fff; font-size:17px; cursor:pointer;
@@ -265,11 +266,28 @@ function itemsOf(cat){ return POOL.filter(p=>p.c===cat); }
 function pickN(arr,n){ return shuffle(arr).slice(0,n); }
 function low(s){ return s.toLowerCase(); }
 
+let ukVoice=null;
+function findVoice(){
+  try{
+    const vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[];
+    ukVoice=vs.find(v=>/^uk/i.test(v.lang))||null;
+  }catch(e){ ukVoice=null; }
+  document.body.classList.toggle('novoice',!ukVoice);
+}
+try{
+  if('speechSynthesis' in window){
+    findVoice();
+    speechSynthesis.addEventListener('voiceschanged',findVoice);
+  }else document.body.classList.add('novoice');
+}catch(e){}
 function say(text){
   try{
     if(!('speechSynthesis' in window)) return;
+    findVoice();
+    if(!ukVoice) return; /* без української озвучки краще мовчати, ніж читати нерозбірливо */
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text); u.lang='uk-UA'; u.rate=0.9;
+    const u=new SpeechSynthesisUtterance(text);
+    u.voice=ukVoice; u.lang=ukVoice.lang; u.rate=0.8; u.pitch=1; u.volume=1;
     speechSynthesis.speak(u);
   }catch(e){}
 }
@@ -290,6 +308,20 @@ function beep(ok){
   }catch(e){}
 }
 
+function fanfare(){
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended') actx.resume();
+    const seq=[[523,0],[659,.15],[784,.3],[1047,.45],[784,.7],[1047,.85]];
+    seq.forEach(([f,dt],i)=>{
+      const o=actx.createOscillator(), g=actx.createGain(), t=actx.currentTime+dt, len=i===5?0.6:0.2;
+      o.type='triangle'; o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.2,t+0.03);
+      g.gain.exponentialRampToValueAtTime(0.001,t+len);
+      o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t+len+0.05);
+    });
+  }catch(e){}
+}
 function setMsg(t, kind){ const m=$('msg'); m.textContent=t; m.className='bubble'+(kind?' '+kind:''); }
 function setProgress(f){ $('prog').style.width=(Math.max(0,Math.min(1,f))*100)+'%'; }
 function showBar(v){ $('bar').style.display = v?'block':'none'; if(v) setProgress(0); }
@@ -342,7 +374,7 @@ function finish(id, stars, text){
   $('again').onclick=()=>startEx(currentEx);
   $('tomenu').onclick=showMenu;
   setMsg('Ти впорався! Вітаю! 🎉','ok');
-  say('Молодець!');
+  fanfare();
   window.scrollTo(0,0);
   for(let i=0;i<26;i++){
     const c=document.createElement('div'); c.className='confetti';
